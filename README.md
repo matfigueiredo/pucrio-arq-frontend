@@ -131,44 +131,6 @@ docker build -t tech4bike-frontend .
 docker run -p 3000:3000 -e NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1 tech4bike-frontend
 ```
 
-**Opção 2: Docker Compose com Frontend + Backend (recomendado)**
-
-O `docker-compose.yml` na raiz do repositório orquestra **ambos os serviços** (frontend e backend):
-
-1. Execute com docker-compose:
-```bash
-docker-compose up --build
-```
-
-Isso irá:
-- Construir e iniciar o backend na porta 8000
-- Construir e iniciar o frontend na porta 3000
-- Configurar a comunicação entre eles automaticamente
-- Persistir o banco de dados SQLite em `../tech4bike-backend/data`
-
-2. Acesse a aplicação:
-- Frontend: http://localhost:3000
-- Backend API: http://localhost:8000
-- Documentação Swagger: http://localhost:8000/docs
-
-**Estrutura do docker-compose:**
-
-- **Backend:** Serviço FastAPI rodando na porta 8000
-- **Frontend:** Serviço Next.js rodando na porta 3000
-- **Comunicação:** Frontend se comunica com backend usando `http://backend:8000/api/v1` (nome do serviço Docker)
-- **Volumes:** Banco de dados SQLite persistido no diretório `../tech4bike-backend/data`
-
-**Nota:** O docker-compose está na raiz do repositório do frontend (componente principal), conforme requisito do MVP.
-
-**Sobre o Dockerfile:**
-
-O Dockerfile utiliza **multistage building** otimizado para Next.js:
-- **Stage 1 (deps):** Instala apenas as dependências
-- **Stage 2 (builder):** Faz o build da aplicação com `output: standalone`
-- **Stage 3 (runner):** Imagem final leve apenas com os arquivos necessários
-
-O modo `standalone` do Next.js cria uma versão otimizada que inclui apenas os arquivos necessários para produção, resultando em uma imagem menor e mais rápida.
-
 ## Funcionalidades
 
 ### Dashboard (`/`)
