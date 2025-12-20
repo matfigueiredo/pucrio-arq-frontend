@@ -119,16 +119,23 @@ npm start
 
 ### Docker
 
-**Opção 1: Docker direto**
+### Execução com Docker
 
-1. Construa a imagem:
+O projeto utiliza **Docker Compose** para facilitar a execução junto com o backend.
+
+1. Inicie a aplicação:
 ```bash
-docker build -t tech4bike-frontend .
+docker-compose up -d
 ```
 
-2. Execute o container:
+2. Verifique os logs (opcional):
 ```bash
-docker run -p 3000:3000 -e NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1 tech4bike-frontend
+docker-compose logs -f
+```
+
+3. Para parar a execução:
+```bash
+docker-compose down
 ```
 
 ## Funcionalidades

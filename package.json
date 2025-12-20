@@ -18,6 +18,7 @@
     "docker:rebuild": "docker-compose down && docker-compose up --build",
     "docker:rebuild:frontend": "docker-compose stop frontend && docker-compose build frontend && docker-compose up -d frontend",
     "docker:rebuild:backend": "docker-compose stop backend && docker-compose build backend && docker-compose up -d backend",
+    "docker:rebuild:clean": "docker-compose down frontend && docker-compose build --no-cache frontend && docker-compose up -d frontend",
     "docker:clean": "docker-compose down -v",
     "docker:clean:all": "docker-compose down -v && docker system prune -f",
     "docker:ps": "docker-compose ps"
