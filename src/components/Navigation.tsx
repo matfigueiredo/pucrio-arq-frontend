@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useAuth } from "@/contexts/AuthContext";
 
 const navItems = [
   { href: "/", label: "Dashboard" },
@@ -12,6 +13,11 @@ const navItems = [
 
 export default function Navigation() {
   const pathname = usePathname();
+  const { isAuthenticated, logout } = useAuth();
+
+  if (!isAuthenticated) {
+    return null;
+  }
 
   return (
     <nav className="border-b border-gray-200 dark:border-gray-800">
@@ -25,7 +31,7 @@ export default function Navigation() {
               Tech4Bike
             </Link>
           </div>
-          <div className="flex space-x-1">
+          <div className="flex items-center space-x-1">
             {navItems.map((item) => {
               const isActive = pathname === item.href;
               return (
@@ -42,6 +48,12 @@ export default function Navigation() {
                 </Link>
               );
             })}
+            <button
+              onClick={logout}
+              className="px-4 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+            >
+              Sair
+            </button>
           </div>
         </div>
       </div>

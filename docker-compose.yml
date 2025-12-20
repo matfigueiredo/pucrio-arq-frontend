@@ -1,0 +1,10 @@
+services:
+  frontend:
+    build: .
+    container_name: tech4bike-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - API_URL=http://tech4bike-backend:8000/api/v1
+      - NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1
+    restart: always

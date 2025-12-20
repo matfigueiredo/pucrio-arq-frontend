@@ -1,9 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { bikesApi, maintenancesApi } from "@/lib/api";
-import type { Bike, Maintenance, DashboardStats } from "@/types";
+import { useRouter } from "next/navigation";
+import { bikesApi, maintenancesApi, weatherApi } from "@/lib/api";
+import type { Bike, Maintenance, DashboardStats, WeatherForecast } from "@/types";
 import StatsCard from "@/components/StatsCard";
+import WeatherCard from "@/components/WeatherCard";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   LineChart,
   Line,
@@ -21,9 +24,20 @@ import { ptBR } from "date-fns/locale";
 import Link from "next/link";
 
 export default function Dashboard() {
+  const { isAuthenticated } = useAuth();
+  const router = useRouter();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [weather, setWeather] = useState<WeatherForecast | null>(null);
+  const [weatherLoading, setWeatherLoading] = useState(false);
+  const [city, setCity] = useState("Rio de Janeiro");
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      router.push("/login");
+    }
+  }, [isAuthenticated, router]);
 
   useEffect(() => {
     async function loadStats() {
@@ -67,6 +81,25 @@ export default function Dashboard() {
 
     loadStats();
   }, []);
+
+  useEffect(() => {
+    async function loadWeather() {
+      if (!city) return;
+      setWeatherLoading(true);
+      try {
+        const forecast = await weatherApi.getForecast(city);
+        setWeather(forecast);
+      } catch (err: any) {
+        console.error("Erro ao carregar previsão do tempo:", err);
+        if (err.response?.status === 503) {
+          setWeather(null);
+        }
+      } finally {
+        setWeatherLoading(false);
+      }
+    }
+    loadWeather();
+  }, [city]);
 
   if (loading) {
     return (
@@ -228,6 +261,79 @@ export default function Dashboard() {
             </tbody>
           </table>
         </div>
+      </div>
+
+      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+              Previsão do Tempo
+            </h2>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+              Dias recomendados para pedalar
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <input
+              type="text"
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  setCity((e.target as HTMLInputElement).value);
+                }
+              }}
+              placeholder="Cidade"
+              className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white text-sm"
+            />
+            <button
+              onClick={() => {
+                const input = document.querySelector(
+                  'input[type="text"]'
+                ) as HTMLInputElement;
+                if (input) setCity(input.value);
+              }}
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm"
+            >
+              Buscar
+            </button>
+          </div>
+        </div>
+
+        {weatherLoading ? (
+          <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+            Carregando previsão...
+          </div>
+        ) : weather && weather.days.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+            {weather.days.map((day) => (
+              <WeatherCard key={day.date} day={day} />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-8">
+            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-6 max-w-md mx-auto">
+              <p className="text-blue-800 dark:text-blue-200 font-medium mb-2">
+                API Key não configurada
+              </p>
+              <p className="text-sm text-blue-600 dark:text-blue-400">
+                Para usar a previsão do tempo, configure a variável de ambiente{" "}
+                <code className="bg-blue-100 dark:bg-blue-800 px-2 py-1 rounded">
+                  OPENWEATHER_API_KEY
+                </code>{" "}
+                no backend. Obtenha uma chave gratuita em{" "}
+                <a
+                  href="https://openweathermap.org/api"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline hover:text-blue-800 dark:hover:text-blue-200"
+                >
+                  openweathermap.org
+                </a>
+              </p>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -80,3 +80,25 @@ export interface DashboardStats {
   recentMaintenances: Maintenance[];
 }
 
+export interface WeatherDay {
+  date: string;
+  temperature: number;
+  min_temp: number;
+  max_temp: number;
+  humidity: number;
+  wind_speed: number;
+  precipitation: number;
+  description: string;
+  icon: string;
+  is_good_for_cycling: boolean;
+}
+
+export interface WeatherForecast {
+  city: string;
+  days: WeatherDay[];
+}
+
+export interface GoodCyclingDays {
+  city: string;
+  good_days: WeatherDay[];
+}
