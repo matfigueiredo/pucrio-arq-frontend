@@ -121,21 +121,24 @@ npm start
 
 ### Execução com Docker
 
-O projeto utiliza **Docker Compose** para facilitar a execução junto com o backend.
+Para rodar o projeto completo (frontend + backend), execute no diretório do frontend:
 
-1. Inicie a aplicação:
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
-2. Verifique os logs (opcional):
+Isso irá subir ambos os serviços (frontend e backend) automaticamente.
+
+**Nota:** Se você quiser rodar apenas o backend isoladamente, pode executar `docker compose up -d` no diretório do backend.
+
+Para verificar os logs:
 ```bash
-docker-compose logs -f
+docker compose logs -f
 ```
 
-3. Para parar a execução:
+Para parar a execução:
 ```bash
-docker-compose down
+docker compose down
 ```
 
 ## Funcionalidades

@@ -1,4 +1,17 @@
 services:
+  backend:
+    build:
+      context: ../pucrio-arq-backend
+      dockerfile: Dockerfile
+    container_name: tech4bike-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DB_PATH=/app/data/tech4bike.db
+    volumes:
+      - backend_data:/app/data
+    restart: always
+
   frontend:
     build: .
     container_name: tech4bike-frontend
@@ -7,4 +20,9 @@ services:
     environment:
       - API_URL=http://tech4bike-backend:8000/api/v1
       - NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1
+    depends_on:
+      - backend
     restart: always
+
+volumes:
+  backend_data:
